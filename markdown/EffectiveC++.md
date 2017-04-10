@@ -93,7 +93,7 @@ class Uncopyable {
   	~Uncopyable() {}
   private:
   	Uncopyable(const Uncopyable&);
-  	Uncopyable& operator=(const Uncopyable&);
+  	const Uncopyable& operator=(const Uncopyable&);
 };
 
 阻止 Test 对象被拷贝：
@@ -106,11 +106,41 @@ class Uncopyable {
 
 1）private 继承（参考 条款32，39）
 
+​	Test 的 member 函数或 friend 函数，以及任何对象，尝试拷贝 Test 对象时，编译器便尝试生成一个 copy 构造函数和一个 copy assignment 操作符，编译器生成版会尝试调用 base class 的对应兄弟，那些调用会被编译器拒绝，因为 base class 的拷贝函数是 private 
+
+（private 成员，在任何继承模式下，对 derived class都是不可见的）
+
 2）析构函数不一定是 virtual（参考 条款7）
 
-3）Boost 库也有个版本哈（参考条款55）
+3）Boost 库也有个版本哈
 
 ### 条款7 为多态基类声明 virtual 析构函数
+
++ 带有多态性质的 base classes 应该声明一个 virtual 析构函数。如果 class 带有任何 virtual 函数，就应该拥有一个 virtual 析构函数
++ classes 设计的目的如果不是作为 base classes 使用(如 STL)，或不是为了具备多态性，就不应该什么 virtual 函数
+
+​       析构函数的运作方式是，最深层派生的哪个 class，其析构函数最先被调用，然后是其每一个 base class 的析构函数被调用。（编译器会在 derived class 的修改函数中调用 base classes 的析构函数，如果找不到实现，就会报链接错误）
+
+​	C++明确指出，当 derived class 对象经由一个 base class 指针删除，而该 base class 带有一个 non-virtual 析构函数，其结果未有定义—实际执行时通常发生的是对象的 derived 成分没被销毁，造成一个诡异的“局部销毁”对象。
+
+### 条款8 别让异常逃离析构函数
+
++ 析构函数绝对不要吐出异常，如果析构函数调用的函数可能抛出异常，则它应该捕获异常，然后吞下他们或结束程序；
++ 当然也可以定义一个函数让客户手动调用，析构函数中也调用，做到双保险。
+
+### 条款9 绝不在构造和析构过程中调用 virtual 函数
+
+
+
+### 条款10 令 operator= 返回一个 reference to *this
+
+
+
+### 条款11 在 operator= 中处理“自我赋值”
+
+危害：
+
+
 
 
 
