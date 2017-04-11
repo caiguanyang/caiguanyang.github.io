@@ -117,7 +117,7 @@ class Uncopyable {
 ### 条款7 为多态基类声明 virtual 析构函数
 
 + 带有多态性质的 base classes 应该声明一个 virtual 析构函数。如果 class 带有任何 virtual 函数，就应该拥有一个 virtual 析构函数
-+ classes 设计的目的如果不是作为 base classes 使用(如 STL)，或不是为了具备多态性，就不应该什么 virtual 函数
++ classes 设计的目的如果不是作为 base classes 使用(如 STL)，或不是为了具备多态性，就不应该声明virtual 函数（请不要继承标准容器，或者任何其他“带有 non-virtual析构函数”）
 
 ​       析构函数的运作方式是，最深层派生的哪个 class，其析构函数最先被调用，然后是其每一个 base class 的析构函数被调用。（编译器会在 derived class 的修改函数中调用 base classes 的析构函数，如果找不到实现，就会报链接错误）
 
@@ -125,20 +125,66 @@ class Uncopyable {
 
 ### 条款8 别让异常逃离析构函数
 
+危害：析构函数抛出异常，且未捕获，可能导致不明确的行为，或者程序结束执行
+
 + 析构函数绝对不要吐出异常，如果析构函数调用的函数可能抛出异常，则它应该捕获异常，然后吞下他们或结束程序；
 + 当然也可以定义一个函数让客户手动调用，析构函数中也调用，做到双保险。
 
 ### 条款9 绝不在构造和析构过程中调用 virtual 函数
 
+危害：导致非预期结果
+
++ 在 derived class 对象的 base class 构造期间，对象的类型是 base class，而不是 derived class。
+
+构造过程：先 base class 构造，然后是 derived class
+
+析构过程：先 derived class 析构，然后是 base class
+
+调用虚函数的话，指针应该指向derived class 的函数，而函数调用的一般的都是 local变量，所以构造过程和析构过程，那些 local 变量要么未初始化，要么已经被释放，所以调用他们会发生不确定行为。
+
 
 
 ### 条款10 令 operator= 返回一个 reference to *this
 
+为了实现连锁赋值（x=y=z=15），赋值操作符必须返回一个 reference 指向操作符的左侧实参。
 
+```c++
+class Widget {
+  public:
+  Widget& operator=(const Widget& rhs) {
+    ...
+    return *this;
+  }
+};
+```
+
+适用与所有赋值操作符重载，如 += -=等，只是一个协议，并无强制性。
 
 ### 条款11 在 operator= 中处理“自我赋值”
 
-危害：
+要考虑自我赋值和异常安全性。
+
+```c++
+Widget& Widget::operator=(const Widget& rhs) {
+  Bitmap* pOrig = pb;
+  pb = new Bitmap(*rhs.pb);   // 备份原指针，避免构造 Bitmap 的过程中出错，导致原指针不可用
+  delete pOrig;  			 // 删除原指针
+  return *this;
+}
+```
+
+### 条款12 复制对象时勿忘其每一个成分
+
++ 如果自己定义 copy 函数，那么当类的成员变量做变更时 ，构造函数，copy 函数，析构函数都需要做相应的调整，避免遗漏；
++ derived class 的 copy 函数不能忘记调用 base class 的 copy 函数完成复制
+
+
+
+## 资源管理
+
+### 条款13 以对象管理资源
+
+p91
 
 
 
