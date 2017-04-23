@@ -2,6 +2,10 @@
 
 
 
+
+
+配置项
+
 改动备注：
 
 include/Sanitizer.php:870
@@ -22,11 +26,17 @@ wfDebugLog()  日志打印到什么地方了
 
 
 
+### LocalSetting.php
 
+mediawiki配置文件。
+
+配置项说明参考：http://blog.csdn.net/fjgysai/article/details/2255246
 
 
 
 ### WebStart.php
+
+参考：http://blog.csdn.net/fjgysai/article/details/2255239 
 
 初始化一个请求的环境
 
@@ -81,10 +91,57 @@ function main() {
   $this->performRequest()；
 }
 
-function performRequest() {}
+function performRequest() {
+  $article = $this->initializeArticle();
+  if (is_object($article)) {
+    $this->perfromAction($article, $reqeustTitle);
+    
+  } else if (is_string($article)) {
+    // 重定向
+    $output->redirect($article);
+  } else {
+    throw new Exception();
+  }
+}
 
+function initializeArticle() {
+  if ($this->context->canUseWikiPage()) {
+    $apge = $this->context->getWikiPage();
+    $article = Article::newFromWikiPage($page, $this->context);
+  } else {
+    $article = Article::newFromTitle($title, $this->context);
+    $this->context->setWikiPage($article->getPage());
+  }
+}
+
+function performAction(Page $page, Title $requestTitle) {
+  $act = $this->getAction();
+  $action = Action::factory($act, $page, $this->context);
+  $action->show();
+}
 
 ```
+
+
+
+### Article.php
+
+​	依赖 WikiPage.php
+
+```php
+// This is the default action of the index.php entry point: just view the page of the given title.
+public function view() {
+  
+}
+```
+
+
+
+
+
+### actions/???Action.php
+
+处理结果
 
 
 
