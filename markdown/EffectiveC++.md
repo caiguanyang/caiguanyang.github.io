@@ -2,7 +2,11 @@
 
 [TOC]
 
-date: 2017-04-05
+
+
+**date: 2017-04-05**
+
+
 
 ## 让自己习惯C++
 
@@ -130,6 +134,10 @@ class Uncopyable {
 + 析构函数绝对不要吐出异常，如果析构函数调用的函数可能抛出异常，则它应该捕获异常，然后吞下他们或结束程序；
 + 当然也可以定义一个函数让客户手动调用，析构函数中也调用，做到双保险。
 
+**构造函数抛出异常，将导致析构函数不被执行**
+
+
+
 ### 条款9 绝不在构造和析构过程中调用 virtual 函数
 
 危害：导致非预期结果
@@ -190,7 +198,7 @@ Widget& Widget::operator=(const Widget& rhs) {
 
 ​       将资源放进对象内，我们便可依赖 C++的“析构函数自动调用机制”确保资源被释放。
 
-+ 获得资源后立刻放进管理对象内。资源取得时机便是初始化时机（RAII: Resource Acquisitions Is Initialization）
++ 获得资源后立刻放进管理对象内。资源取得时机便是初始化时机（RAII: Resource Acquisitions Is Initialization）：在构造的时候获取资源，在析构的时候释放资源
 
 对于 heap-based 类型资源，可以关注下智能指针：std::auto_ptr, std::tr1::shared_ptr
 
@@ -205,6 +213,8 @@ Widget& Widget::operator=(const Widget& rhs) {
 + 禁止复制。不能复制的，要明确制止
 + 对底层资源寄出“引用计数法”。参考 tr1::shared_ptr
 + 转移底部资源的拥有权。参考 std::auto_ptr
+
+C++11 和 Boost 库中都有相应解决方案
 
 ### 条款15 在资源管理类中提供对原始资源的访问
 
