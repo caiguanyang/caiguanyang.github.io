@@ -6,13 +6,33 @@
 
 
 
+## 特征
+
+1）键冲突的处理办法：链表法
+
+
+
+
+
+## 问题
+
+HashmapDB::doSearch中shortcut的作用是什么？
+
+​         *shortcut_len_buf = pb->cur_num_ - item - 1;
+
+get_objectid() 返回额是什么：
+
+​    参考cloud_contorl_def.h，App_Index_t
+
+
+
 ## Chunk_file
 
 **constructor 说明：**
 
   Chunk_file( const std::string& prefix, int arr_size, int block_num, int chunk_idx)
 
-arr_size: 每个 block 中最多存储的数据条目
+arr_size: 每个 block 中最多存储的数据条目(相同key的元素)
 
 block_num：每个 chunkfile 中最多容纳的 block 个数
 
@@ -37,7 +57,7 @@ chunk_idx: 同一个库可能由多个 chunkfile 组成，标示 chunkfile 的�
     {
         int prev_;
         int next_;
-        int tail_;
+        int tail_;  // 相同key的元素可能多于一个block容纳的元素数量，tail_标示最后一个blockid
         size_t length_;
         int cur_num_;
         char content_[0];  // 定义长度为0的数组，创建结构体变量时不分配空间，但是可以通过content变量寻址到 cur_num_之后的地址，事先分配好内存空间，直接通过 memcpy 即可拷贝内容到 content_的位置
@@ -72,7 +92,6 @@ inline TermKey_t to_termkey_t<uint64_t>(const uint64_t &key)
     {
         return (FileHead *) mmap_ptr_;
     }
-
 ```
 
 block_size_ = sizeof(BlockHead) + arr_size * sizeof(Value_Type);
@@ -83,6 +102,8 @@ chunk_file 中chunk_idx_是如何维护的？？？？
 
 ​      hashmapdb 创建 chunk_file 时，通过构造函数传递。由 hashmapdb 维护
 
+p_empty_: 作用和初始化
+
 
 
 ### 关键函数
@@ -91,9 +112,10 @@ chunk_file 中chunk_idx_是如何维护的？？？？
 // 添加1个或多个元素到 block
 int Chunk_file<Key_Type,Value_Type>::AppendData(int block_id, const Value_Type * arr, size_t arr_len){
   	// 检验当前 block_id可容纳的元素数量
-  	// 填充当天的 block_id
+  	// 填充当前的 block_id
     // 如果 arr_len 大于 block 能容纳的元素数量，创建新的 block
     // memcpy函数进行数据拷贝
+  	// 重点：返回最后的一个block_id，同时添加>block_size个元素时，需要多个block同时存储此批数据
 }
 // 
 BlockHead* _getLocalBlock( int local_block_id) {
@@ -157,9 +179,8 @@ chunk_file 的内存是如何分配的???
 
 // hashmapdb 中含有多个 chunkfile
 std::vector<chunk_t_*> chunks_;
-// ????
+// 存储key和blockhead的映射关系
 std::map<Key_Type,int> kb_table_;
-
 ```
 
 blockID是如何生成的？？
@@ -178,10 +199,32 @@ int HashMapDB<Key_Type,Value_Type>::_getNewBlock() {
 
 // 添加元素
 int HashMapDB<Key_Type,Value_Type>::add( const Key_Type * key, const Value_Type *arr, size_t arr_len){
+  // 先根据key检索blockid, 如果不存在，新建block。如果存在则在继续后续出来（键冲突的出来方式：链表法）
+  // 新建的block，维护meta信息
+  // 添加元素，并维护head_block的tail信息（chunk_file::AppendData）
   
 }
 
+int HashMapDB<Key_Type,Value_Type>::_load() {
+  // 1. 加载meta信息，初始化kb_table_
+  // 2. 加载chunk_file
+}
+
+int HashMapDB<Key_Type,Value_Type>::_getNewBlock() {
+  // chunk_file中可以容纳新block，直接分配blockid
+  // 如果没有则创建新的chunk_file  
+}
 ```
+
+
+
+## Cursor
+
+遍历block中的多个元素
+
+初始化时需要指定HashmapDB和key
+
+
 
 
 
