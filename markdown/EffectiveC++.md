@@ -240,6 +240,30 @@ p108
 
 
 
+### 条款20 宁以 pass-by-referencee-to-const替换 pass-by-value
+
+p116
+
+缺省情况下 C++以 by value 方式传递对象至函数；
+
+值传递的弊端：
+
+1）C++对象进行值传递时，有时是比较昂贵的操作，涉及到成员对象的多次构造和析构；
+
+​       （例外：内置类型，STL 的迭代器和函数对象）
+
+2）继承体系中的对象值传递是，可能会出现 slicing(对象切割)问题。如函数的参数类型为基类，但是实际传递的值为子类的实例，会导致函数中只能使用基类中定义的行为。
+
+
+
+### 条款21 必须返回对象时，别妄想返回其 reference
+
+p120
+
+绝不要返回 pointer或 reference 指向一个 local stack 对象，或返回 reference 指向一个 heap-allocated 对象（需要依赖调用方去释放空间，又会引发其他问题），或返回 pointer 或 reference 指向 local static 对象而有可能同时需要多个这样的对象。
+
+参考：条款4
+
 
 
 
