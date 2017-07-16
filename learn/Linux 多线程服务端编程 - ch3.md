@@ -20,9 +20,11 @@ blocking-queue 是多线程编程的利器，可用于实现任务队列，生�
 
 事件驱动，有一个或多个并发输入源，有一个 ServiceHandler, 多个 Request Handlers
 
+<img src="https://caiguanyang.github.io/img/reactor_1.png" width="500" height="250" align=center alt="reactor 类图" />
 
 
-**缺点：**共享一个 Reactor 的多个 channel，如果出现一个channel 的 IO读写耗时过长，则会影响其他 channel 的耗时，如处理大文件传输。另外基于事件驱动的编程模型，要求事件回调必须是非阻塞的，对于涉及网络 IO的请求响应式协议，它容易割裂业务逻辑，使其散步与多个回调函数中，不容易理解和维护
+
+**缺点:**共享一个 Reactor 的多个 channel，如果出现一个channel 的 IO读写耗时过长，则会影响其他 channel 的耗时，如处理大文件传输。另外基于事件驱动的编程模型，要求事件回调必须是非阻塞的，对于涉及网络 IO的请求响应式协议，它容易割裂业务逻辑，使其散步与多个回调函数中，不容易理解和维护
 
    有关 event loop，比较明显的缺点是**非抢占式的**
 
