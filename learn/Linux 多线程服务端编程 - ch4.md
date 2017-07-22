@@ -20,7 +20,8 @@ mutex::ThreadPool，mutex::CountDownLatch
 * 编写线程安全程序的一个难点在于**线程安全是不可组合的**，一个函数调用了两个线程安全的函数，这个函数本身很可能不是线程安全的。
 * C++标准库容器和 std::string 都不是线程安全的，只是 std::allocator 保证是线程安全的。一方面是为了避免不必要的性能开销，另一方面就是单个函数的线程安全并不具备可组合性。
 * 尽量使用相同的方式创建线程，且线程的创建最好能在初始化阶段全部完成。好处是线程不需要销毁，可以伴随进程一直运行，彻底避开线程安全退出可能面临的各种困难。
-* 一个服务程序的线程数目应该于当前负载无关，而应该与机器的 CPU 数目有关；对实时性有要求的，线程数目不应该超过 CPU 数目，这样可以基本保证新任务总能及时得到执行
+* 一个服务程序的线程数目应该于当前负载无关，而应该与机器的 CPU 数目有关；对实时性有要求的，线程数目不应该超过 CPU 数目，这样可以基本保证新任务总能及时得到执行。
+* 每个线程应该又明确的职责，例如 IO 线程，计算线程等。且线程之间的交互应该尽量简单，理想情况下线程之间只用消息传递就；如果必须用锁，那么最好避免一个线程同时持有两把或更多的锁，避免产生死锁。
 
 
 
@@ -49,4 +50,24 @@ https://en.wikipedia.org/wiki/Thrashing_(computer_science)
 ## 基础知识
 
 ### __thread 变量
+
+参考：https://gcc.gnu.org/onlinedocs/gcc/Thread-Local.html#Thread-Local
+
+​      Thread-local storage (TLS) is a mechanism by which variables are allocated such that `there is one instance of the variable per extant thread`. 
+
+​      The `__thread` specifier may be applied to any global, file-scoped static, function-scoped static, or static data member of a class. It may not be applied to block-scoped automatic or non-static data member.
+
+#### pthread_key_t
+
+参考：http://blog.csdn.net/yusiguyuan/article/details/21785641
+
+### pthread condition variable
+
+#### 问题
+
+* 为什么需要一个 mutex
+
+https://stackoverflow.com/questions/2763714/why-do-pthreads-condition-variable-functions-require-a-mutex
+
+* ​
 
