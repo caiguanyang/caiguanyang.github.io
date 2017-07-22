@@ -96,6 +96,14 @@ https://www.zybuluo.com/phper/note/595507
 
 
 
+#### blocking queue
+
+
+
+
+
+
+
 ## 进程间通信
 
 ### 进程间通信首选 socket
