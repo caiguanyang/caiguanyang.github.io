@@ -70,11 +70,29 @@ blocking-queue 是多线程编程的利器，可用于实现任务队列，生�
 
 
 
-### 知识点
+## 基础知识
 
-#### non-blocking io
+### 网络编程中的基本概念
 
-http://www.kegel.com/dkftpbench/nonblocking.html
+http://www.jianshu.com/p/486b0965c296
+
+https://www.zybuluo.com/phper/note/595507
+
+#### 同步、异步、阻塞、非阻塞
+
+http://yaocoder.blog.51cto.com/2668309/1308899
+
+​         同步和异步于消息的通知机制相关：当发出同步调用后，调用方需要一直等待返回消息结果，异步调用则不需要，任务处理完后，会通过状态、回调通知调用方。
+
+ 	阻塞和非阻塞则与程序等待消息通知时的状态有关：阻塞调用指当前线程在调用结果返回之前会被挂起，不能执行其他任务；而非阻塞则不会阻塞当前线程，会立即返回。
+
+#### linux 中的5种 IO模型
+
+非阻塞：http://www.kegel.com/dkftpbench/nonblocking.html
+
+* 阻塞 IO、非阻塞 IO、IO复用、信号驱动 IO、异步 IO；前4种都是同步 IO
+* 阻塞和非阻塞的区别：线程要访问的数据未就绪时，线程是否需要等待
+* 同步和异步的区别：是否需要调用方主动读写数据（异步采用回调方式）
 
 #### select、poll、epoll
 
@@ -84,21 +102,9 @@ http://www.jianshu.com/p/dfd940e7fca2
 
 应用：http://xuding.blog.51cto.com/4890434/1739649
 
-#### linux的5种 IO 模型
-
-http://www.jianshu.com/p/486b0965c296
-
-#### 网络编程中的基本概念
-
-http://www.jianshu.com/p/486b0965c296
-
-https://www.zybuluo.com/phper/note/595507
 
 
-
-#### blocking queue
-
-
+### blocking queue
 
 
 

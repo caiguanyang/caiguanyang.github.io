@@ -26,5 +26,32 @@
 
 ### swap
 
+​       交换两个对象的值，当标准库中的 swap 算法(1次copy 构造，2次赋值构造)不能满足需求时，可以有自定义的实现，如采用 pimpl (pointer to implementation) 手法的对象。
+
+**交换两个整数**
+
+```c++
+void swap(int a, int b) {
+  // method - 1
+  a ^= b;
+  b ^= a;
+  a ^= b;
+  // method = 2
+  a = a + b;
+  b = a - b;
+  a = a - b;
+}
+```
+
+​       交换 vector 或者其他容器，如果两个对象采用相同的分配器，则只需要交换控制信息即可，不涉及到容器内元素的拷贝，效率比较高。（ All iterators, references and pointers remain valid for the swapped objects.）
+
+
+
+
+
+
+
+
+
 
 
