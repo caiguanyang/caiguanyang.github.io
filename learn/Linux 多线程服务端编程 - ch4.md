@@ -2,6 +2,8 @@
 
 [TOC]
 
+Date: 2017-07-22
+
 ## 知识点
 
 * 在没有适当同步的情况下，多个 CPU 上运行的多个线程中的事件发生先后顺序是无法确定的，在引入适当同步后，事件之间才有了 happens-before 关系。因此多线程的正确性也不能依赖任何一个线程的执行速度，不能通过原地等待(sleep)来假定其他线程的事件已经发生。
@@ -64,6 +66,53 @@ https://en.wikipedia.org/wiki/Thrashing_(computer_science)
 
 
 ### pthread condition variable
+
+用于线程同步
+
+#### 基本用法
+
+```c++
+#include <pthread.h>
+int pthread_cond_init(pthread_cond_t *restrict cond,
+                     pthread_condattr_t *restrict attr);
+int pthrad_cond_destroy(pthread_cond_t *cond);
+
+int pthread_cond_wait(pthread_cond_t *restrict cond,
+                     phtread_mutex_t *restrict mutex);
+int pthread_cond_timedwait(pthread_cond_t *restrict cond,
+                          phtread_mutex_t *restrict mutex,
+                          const struct timespec *restrict timeout);
+
+int pthread_cond_signal(pthread_cond_t *cond);
+int pthread_cond_broadcast(pthread_cond_t *cond);
+```
+
+```c
+while(1) {
+    pthread_mutex_lock(&mutex);
+    while(some_data == NULL) { // predicate to acccount for spurious wakeups,would also 
+                               // make it robust if there were several consumers
+       pthread_cond_wait(&cond,&mutex); //atomically lock/unlock mutex
+    }
+
+    char *data = some_data;
+    some_data = NULL;
+    pthread_mutex_unlock(&mutex);
+    handle(data);
+}
+```
+
+​        传递给 phtread_cond_wait的互斥量对条件进行保护。调用者把锁住的互斥量传递给函数，函数自动把线程放到等待条件的线程列表上，对互斥量解锁。这样就关闭了条件检查和线程进入休眠状态等待条件改变这两个操作之间的竞态。当 phtread_cond_wait 返回时，互斥量再次被锁住。
+
+
+
+#### 假唤醒
+
+参考：https://en.wikipedia.org/wiki/Spurious_wakeup
+
+https://sites.google.com/site/embeddedmonologue/home/mutual-exclusion-and-synchronization/spurious-wakeup-and-infinite-waiting-on-condvar
+
+在多处理器机器上可能发生，多个线程同时被唤醒。
 
 
 

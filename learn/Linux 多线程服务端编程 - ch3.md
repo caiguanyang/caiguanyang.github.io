@@ -90,6 +90,8 @@ http://yaocoder.blog.51cto.com/2668309/1308899
 
 非阻塞：http://www.kegel.com/dkftpbench/nonblocking.html
 
+https://segmentfault.com/a/1190000003063859
+
 * 阻塞 IO、非阻塞 IO、IO复用、信号驱动 IO、异步 IO；前4种都是同步 IO
 * 阻塞和非阻塞的区别：线程要访问的数据未就绪时，线程是否需要等待
 * 同步和异步的区别：是否需要调用方主动读写数据（异步采用回调方式）
@@ -101,6 +103,22 @@ http://www.jianshu.com/p/dfd940e7fca2
 可以从支持一个进程所能打开的最大连接数，fd增加后所带来的效率问题，消息传递方式区分3种方式
 
 应用：http://xuding.blog.51cto.com/4890434/1739649
+
+```c
+int epoll_create(int size)；//创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
+int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
+```
+
+​      epoll事先通过epoll_ctl()来注册一 个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait() 时便得到通知。(`此处去掉了遍历文件描述符，而是通过监听回调的的机制`。这正是epoll的魅力所在。)
+
+​       select, poll 采用轮询的方式遍历监控的 fd 是否就绪。效率和监听 fd 线性相关。其中 poll 没有监听 fd 的数量限制。
+
+
+
+#### TCP Recv-Q 和 Send-Q
+
+参考：http://jaseywang.me/2014/07/20/tcp-queue-%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/
 
 
 
