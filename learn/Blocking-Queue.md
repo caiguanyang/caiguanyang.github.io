@@ -12,7 +12,46 @@
 
 ### muduo 库
 
+#### BlockingQueue
 
+```c++
+Condition _notEmpty;
+MuthexLock _mutex;
+
+push:
+    _mutex.lock();
+      
+pop:
+    _mutex.lock();
+    _notEmpty.wait();
+```
+
+
+
+
+
+#### BoundedBlockingQueue
+
+```c++
+Condition _notEmpty;
+Condition _notFull;
+MuthexLock _mutex;
+
+push:
+    _mutex.lock();
+    _notFull.wait();
+    _notEmpty.notify();
+
+pop:
+    _mutex.lock();
+    _notEmpty.wait();
+    _notFull.notify();
+
+```
+
+参考 boost::circualar_buffer
+
+https://theboostcpplibraries.com/boost.circularbuffer
 
 
 
@@ -58,8 +97,4 @@ struct concurrent_queue_rep : public concurrent_queue_rep_base {
 ```
 
 
-
-
-
-自己实现一个
 
