@@ -7,6 +7,8 @@
 + accept惊群问题
 + worker进程执行逻辑
 + master进程和worker进程如何通信？如kill，worker进程信息同步
++ scoreboard学习
++ ​
 
 
 
@@ -576,7 +578,10 @@ fpm_run: 创建worker进程；master进程进入fpm_event_loop()
 
 主要负责worker进程的管理，如初始化、创建、资源分配/回收等；
 
-+ ​
++ fpm_scoreboard.h
+
+用于记录worker进程的工作状态
+
 + fpm_signals.h
 
 master进程和worker进程注册信号处理函数；
@@ -593,7 +598,16 @@ fpm_event_loop()：master进程主逻辑
 
 ​       用fpm_array_s存储各子模块的cleanup函数，用于资源回收
 
-+ ​
++ fpm_request.h
+
+
+worker进程处理http请求的工具函数集，主要包含如下几个状态：FPM_REQUEST_ACCEPTING、FPM_REQUEST_READING_HEADERS、FPM_REQUEST_INFO、FPM_REQUEST_EXECUTING、FPM_REQUEST_END、FPM_REQUEST_FINISHED
+
++ fpm_worker_pool.h
+
+
+worker_pool结构体的维护，采用全局变量的方式（fpm_worker_all_pools），多个进程共享访问此结构中的数据，如socoreboard；通过fpm_conf_init_main完成worker_pool的初始化。
+
 + ​
 
 
