@@ -611,6 +611,16 @@ worker_pool结构体的维护，采用全局变量的方式（fpm_worker_all_poo
 + ​
 
 
+==========工具=========
+
++ fpm_atomic.h
+
+
+提供了原子操作的封装用于支持不同平台；提供了spinlock，进程通过sched_yield释放CPU
+
++ ​
+
+
 
 ## 参考
 
